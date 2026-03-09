@@ -7,7 +7,6 @@ const IMAGE_SIZE = 128;
 const DATASET_PATH = "./task-3/dataset";
 const SAVE_PATH = "task-3/output";
 
-
 function loadImage(filePath) {
   const jpegData = fs.readFileSync(filePath);
   const rawImageData = jpeg.decode(jpegData, { useTArray: true });
@@ -18,14 +17,14 @@ function loadImage(filePath) {
   const buffer = new Uint8Array(width * height * 3);
 
   for (let i = 0, j = 0; i < data.length; i += 4) {
-    buffer[j++] = data[i];     // R
-    buffer[j++] = data[i + 1]; // G
-    buffer[j++] = data[i + 2]; // B
+    buffer[j++] = data[i];
+    buffer[j++] = data[i + 1];
+    buffer[j++] = data[i + 2];
   }
 
   let tensor = tf.tensor3d(buffer, [height, width, 3]);
-  
-  tensor = tf.image.resizeNearestNeighbor(tensor, [IMAGE_SIZE, IMAGE_SIZE]);
+
+  tensor = tf.image.resizeNearestNeighbor(tensor, [IMAGE_SIZE, IMAGE_SIZE]); //resize image
   tensor = tensor.toFloat().div(255.0);
 
   return tensor;
@@ -51,46 +50,50 @@ function loadDataset() {
 
   return {
     images: tf.stack(images),
-    labels: tf.oneHot(
-      tf.tensor1d(targets, "int32"),
-      classNames.length
-    ),
+    labels: tf.oneHot(tf.tensor1d(targets, "int32"), classNames.length),
     classNames,
   };
 }
 
-
 function createModel(numClasses) {
   const model = tf.sequential();
 
-  model.add(tf.layers.conv2d({
-    inputShape: [IMAGE_SIZE, IMAGE_SIZE, 3],
-    filters: 16,
-    kernelSize: 3,
-    activation: "relu",
-  }));
+  model.add(
+    tf.layers.conv2d({
+      inputShape: [IMAGE_SIZE, IMAGE_SIZE, 3],
+      filters: 16,
+      kernelSize: 3,
+      activation: "relu",
+    }),
+  );
 
   model.add(tf.layers.maxPooling2d({ poolSize: 2 }));
 
-  model.add(tf.layers.conv2d({
-    filters: 32,
-    kernelSize: 3,
-    activation: "relu",
-  }));
+  model.add(
+    tf.layers.conv2d({
+      filters: 32,
+      kernelSize: 3,
+      activation: "relu",
+    }),
+  );
 
   model.add(tf.layers.maxPooling2d({ poolSize: 2 }));
 
   model.add(tf.layers.flatten());
 
-  model.add(tf.layers.dense({
-    units: 64,
-    activation: "relu",
-  }));
+  model.add(
+    tf.layers.dense({
+      units: 64,
+      activation: "relu",
+    }),
+  );
 
-  model.add(tf.layers.dense({
-    units: numClasses,
-    activation: "softmax",
-  }));
+  model.add(
+    tf.layers.dense({
+      units: numClasses,
+      activation: "softmax",
+    }),
+  );
 
   model.compile({
     optimizer: "adam",
@@ -101,34 +104,32 @@ function createModel(numClasses) {
   return model;
 }
 
-
 async function saveModel(model) {
+  await model.save(
+    tf.io.withSaveHandler(async (artifacts) => {
+      fs.writeFileSync(
+        `${SAVE_PATH}/model.json`,
+        JSON.stringify({
+          modelTopology: artifacts.modelTopology,
+          weightSpecs: artifacts.weightSpecs,
+        }),
+      );
 
-  await model.save(tf.io.withSaveHandler(async (artifacts) => {
+      fs.writeFileSync(
+        `${SAVE_PATH}/weights.bin`,
+        Buffer.from(artifacts.weightData),
+      );
 
-    fs.writeFileSync(
-      `${SAVE_PATH}/model.json`,
-      JSON.stringify({
-        modelTopology: artifacts.modelTopology,
-        weightSpecs: artifacts.weightSpecs
-      })
-    );
+      console.log("Model saved in output folder");
 
-    fs.writeFileSync(
-      `${SAVE_PATH}/weights.bin`,
-      Buffer.from(artifacts.weightData)
-    );
-
-    console.log("Model saved in output folder");
-
-    return {
-      modelArtifactsInfo: {
-        dateSaved: new Date(),
-        modelTopologyType: "JSON"
-      }
-    };
-  }));
-
+      return {
+        modelArtifactsInfo: {
+          dateSaved: new Date(),
+          modelTopologyType: "JSON",
+        },
+      };
+    }),
+  );
 }
 
 (async () => {
@@ -143,26 +144,26 @@ async function saveModel(model) {
 
   console.log("Training...");
   await model.fit(images, labels, {
-  epochs: 5,
-  batchSize: 8,
-  shuffle: true,
-  callbacks: {
-    onEpochBegin: (epoch) => {
-      console.log(`Starting Epoch ${epoch + 1}`);
+    epochs: 5,
+    batchSize: 8,
+    shuffle: true,
+    callbacks: {
+      onEpochBegin: (epoch) => {
+        console.log(`Starting Epoch ${epoch + 1}`);
+      },
+      onEpochEnd: (epoch, logs) => {
+        console.log(
+          `Epoch ${epoch + 1} complete | loss=${logs.loss.toFixed(4)} | accuracy=${logs.acc || logs.accuracy}`,
+        );
+      },
     },
-    onEpochEnd: (epoch, logs) => {
-      console.log(
-        `Epoch ${epoch + 1} complete | loss=${logs.loss.toFixed(4)} | accuracy=${logs.acc || logs.accuracy}`
-      );
-    }
-  }
-});
+  });
 
   console.log("Training Complete!");
 
   if (!fs.existsSync(SAVE_PATH)) {
-  fs.mkdirSync(SAVE_PATH, { recursive: true });
-}
+    fs.mkdirSync(SAVE_PATH, { recursive: true });
+  }
 
   await saveModel(model);
 
