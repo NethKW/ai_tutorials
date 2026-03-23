@@ -1,24 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <title>Camera Test</title>
+  <title>Camera Test & Photo Upload</title>
   <link rel="stylesheet" href="task5.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
   <script defer src="script.js"></script>
 </head>
 
 <body>
   <div class="face-detection">
-    <h2>Camera Test</h2>
+    <h2>Camera & Photo Test</h2>
 
     <button class="button" onclick="startCamera()">Start Camera</button>
     <p class="status" id="status">Click the button to start camera</p>
 
     <div class="camera">
-      <video id="video" width="600" height="450" autoplay muted playsinline></video>
+      <video id="video" autoplay muted playsinline></video>
+      <canvas id="canvas"></canvas>
     </div>
-  </div>
 
-  <script src="script.js"></script>
+    <h3>Or Upload a Photo</h3>
+    <input type="file" id="upload" accept="image/*">
+    <canvas id="uploadCanvas" class="uploadCanvas"></canvas>
+  </div>
 </body>
+
 </html>
