@@ -5,7 +5,7 @@ const uploadCanvas = document.getElementById("uploadCanvas");
 
 async function loadModel() {
   statusText.innerText = "Loading face detection model...";
-  await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
+  await faceapi.nets.tinyFaceDetector.loadFromUri("../models");
   statusText.innerText = "Model loaded successfully!";
 }
 
