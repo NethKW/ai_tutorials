@@ -1,0 +1,51 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #e6f0ff;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.main {
+    max-width: 700px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+.upload-section {
+    margin-bottom: 20px;
+}
+
+.upload-btn {
+    display: inline-block;
+    padding: 10px 25px;
+    cursor: pointer;
+    background-color: #4a90e2;
+    color: #fff;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.upload-btn input[type="file"] {
+    display: none;
+}
+
+.canvas-section {
+    margin-top: 20px;
+    display: inline-block;
+    border: 3px solid #4a90e2;
+    border-radius: 10px;
+    padding: 5px;
+    background: #f9f9f9;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+canvas {
+    max-width: 100%;
+    display: block;
+    border-radius: 8px;
+}

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Task-6 Face Detection (Upload)</title>
+
+  <link rel="stylesheet" href="task6.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+  <script defer src="script.js"></script>
+</head>
+
+<body>
+  <div class="main">
+    <h1>Face Detection - Upload Image</h1>
+
+    <div class="upload-section">
+      <label class="upload-btn">
+        Choose Image
+        <input type="file" id="upload" accept="image/*">
+      </label>
+      <p id="status">Load an image</p>
+    </div>
+
+    <div class="canvas-section">
+      <canvas id="canvas"></canvas>
+    </div>
+  </div>
+</body>
+
+</html>
